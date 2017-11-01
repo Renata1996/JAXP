@@ -1,0 +1,172 @@
+<?xml version="1.0"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema"
+           targetNamespace="com.epam"
+           elementFormDefault="qualified"
+           xmlns:tns="com.epam" >
+
+    <xs:element name="Report">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element name="Student" type="tns:studentType" maxOccurs="unbounded"/>
+
+                <xs:element name="Profile" type="tns:programProfile" maxOccurs="unbounded">
+
+                    <xs:unique name="coursesInProgramListUnique">
+                        <xs:selector xpath="tns:courseList/tns:courseID"/>
+                        <xs:field xpath="."/>
+                    </xs:unique>
+
+                </xs:element>
+
+                <xs:element name="Course" type="tns:courseType" maxOccurs="unbounded">
+                    <xs:unique name="tasksInCourseListUnique">
+                        <xs:selector xpath="tns:tasksList/tns:taskID"/>
+                        <xs:field xpath="."/>
+                    </xs:unique>
+                </xs:element>
+
+                <xs:element name="Task" type="tns:taskType" maxOccurs="unbounded"/>
+            </xs:sequence>
+        </xs:complexType>
+
+        <xs:unique name="StudentUnique">
+            <xs:selector xpath="tns:Student"/>
+            <xs:field xpath="@ID"/>
+        </xs:unique>
+
+        <xs:key name="keyProgr">
+            <xs:selector xpath="tns:Profile"/>
+            <xs:field xpath="tns:programID"/>
+        </xs:key>
+
+        <xs:keyref name="keyRefProgr" refer="tns:keyProgr">
+            <xs:selector xpath="tns:Student"/>
+            <xs:field xpath="tns:programProfile"/>
+        </xs:keyref>
+
+        <xs:key name="keyCourse">
+            <xs:selector xpath="tns:Course"/>
+            <xs:field xpath="tns:courseID"/>
+        </xs:key>
+
+        <xs:keyref name="keyRefCourse" refer="tns:keyCourse">
+            <xs:selector xpath="tns:Profile/tns:courseList/tns:courseID"/>
+            <xs:field xpath="."/>
+        </xs:keyref>
+
+        <xs:key name="keyTask">
+            <xs:selector xpath="tns:Task"/>
+            <xs:field xpath="tns:taskID"/>
+        </xs:key>
+
+        <xs:keyref name="keyRefTask" refer="tns:keyTask">
+            <xs:selector xpath="tns:Course/tns:tasksList/tns:taskID"/>
+            <xs:field xpath="."/>
+        </xs:keyref>
+    </xs:element>
+
+    <xs:complexType name="studentType" >
+        <xs:sequence>
+            <xs:element name="fullName" type="tns:stringType"/>
+            <xs:element name="city" type="tns:stringType"/>
+            <xs:element name="email" type="tns:emailType"/>
+            <xs:element name="startDay" type="xs:date"/>
+            <xs:element name="isContract" type="xs:boolean"/>
+            <xs:element name="programProfile" type="tns:integerType"/>
+        </xs:sequence>
+        <xs:attribute name="ID" type="xs:int" use="required"/>
+    </xs:complexType>
+
+    <xs:complexType name="programProfile">
+        <xs:sequence>
+            <xs:element name="programID" type="tns:integerType"/>
+            <xs:element name="programName" type="tns:stringType"/>
+            <xs:element name="author" type="tns:stringType"/>
+            <xs:element name="creationDay" type="xs:date"/>
+            <xs:element name="courseList" type="tns:courseListType" maxOccurs="unbounded">
+
+            </xs:element>
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:complexType name="courseType">
+        <xs:sequence>
+            <xs:element name="courseID" type="tns:integerType" minOccurs="1" maxOccurs="unbounded"/>
+            <xs:element name="courseName" type="tns:stringType"/>
+            <xs:element name="courseAuthor" type="tns:stringType"/>
+            <xs:element name="tasksList" type="tns:tasksListType"/>
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:complexType name="taskType">
+        <xs:sequence>
+            <xs:element name="taskID" type="tns:integerType"/>
+            <xs:element name="name" type="tns:stringType"/>
+            <xs:element name="tasks" type="tns:taskSelectionType"/>
+            <xs:element name="timeMaking" type="tns:integerType"/>
+            <xs:element name="mark" type="tns:markType" minOccurs="0"/>
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:complexType name="tasksListType">
+        <xs:sequence>
+            <xs:element name="taskID" type="tns:integerType" maxOccurs="unbounded"/>
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:complexType name="courseListType">
+        <xs:sequence>
+            <xs:element name="courseID" type="xs:int" maxOccurs="unbounded"/>
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:simpleType name="markType">
+        <xs:restriction base="tns:integerType">
+            <xs:minInclusive value="0"/>
+            <xs:maxInclusive value="5"/>
+        </xs:restriction>
+    </xs:simpleType>
+
+    <xs:complexType name="taskSelectionType">
+        <xs:sequence>
+            <xs:element name="theoryTask" type="tns:theoryType" minOccurs="0" maxOccurs="1"/>
+            <xs:element name="practicalTask" type="tns:practicalType" minOccurs="0" maxOccurs="1" />
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:complexType name="theoryType">
+        <xs:choice>
+            <xs:element name="notStart" fixed="еще не приступил"/>
+            <xs:element name="complited" fixed="завершено"/>
+            <xs:element name="inProcess" fixed=" в процессе"/>
+            <xs:element name="onVerification" fixed="на проверке"/>
+        </xs:choice>
+    </xs:complexType>
+
+    <xs:complexType name="practicalType">
+        <xs:choice>
+            <xs:element name="notStart" fixed="еще не приступил"/>
+            <xs:element name="complited" fixed="завершено"/>
+            <xs:element name="inProcess" fixed=" в процессе"/>
+        </xs:choice>
+    </xs:complexType>
+
+    <xs:simpleType name="stringType">
+        <xs:restriction base="xs:string">
+            <xs:minLength value="1"/>
+            <xs:maxLength value="70"/>
+        </xs:restriction>
+    </xs:simpleType>
+
+    <xs:simpleType name="integerType">
+        <xs:restriction base="xs:int">
+            <xs:maxInclusive value="10000"/>
+        </xs:restriction>
+    </xs:simpleType>
+
+    <xs:simpleType name="emailType">
+        <xs:restriction base="tns:stringType">
+            <xs:pattern value="[_\-a-zA-Z0-9\.\+]+@[a-zA-Z0-9](\.?[\-a-zA-Z0-9]*[a-zA-Z0-9])*"/>
+        </xs:restriction>
+    </xs:simpleType>
+</xs:schema>

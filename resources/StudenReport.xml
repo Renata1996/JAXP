@@ -1,0 +1,144 @@
+<?xml version="1.0"?>
+<Report xmlns="com.epam"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="com.epam  Report.xsd">
+
+    <Student ID="1">
+        <fullName>Alexander Sergeev</fullName>
+        <city>Saratov</city>
+        <email>aba@epam.com</email>
+        <startDay>2007-01-01</startDay>
+        <isContract>true</isContract>
+        <programProfile>1</programProfile>
+    </Student>
+
+    <Student ID="2">
+        <fullName>Boris Romanov</fullName>
+        <city>Saratov</city>
+        <email>bor@epam.com</email>
+        <startDay>2010-01-01</startDay>
+        <isContract>true</isContract>
+        <programProfile>1</programProfile>
+    </Student>
+
+    <Student ID="3">
+        <fullName>Vadim Petrov</fullName>
+        <city>Saratov</city>
+        <email>vadim@gmail.com</email>
+        <startDay>2008-01-09</startDay>
+        <isContract>false</isContract>
+        <programProfile>1</programProfile>
+    </Student>
+
+    <Student ID="4">
+        <fullName>Ivan Fedorov</fullName>
+        <city>Saratov</city>
+        <email>ivan@gmail.com</email>
+        <startDay>2008-01-09</startDay>
+        <isContract>false</isContract>
+        <programProfile>3</programProfile>
+    </Student>
+
+    <Profile>
+        <programID>1</programID>
+        <programName>Полная программа</programName>
+        <author>Ivan</author>
+        <creationDay>2010-01-01</creationDay>
+        <courseList>
+            <courseID>1</courseID>
+            <courseID>2</courseID>
+            <courseID>3</courseID>
+        </courseList>
+    </Profile>
+
+    <Profile>
+        <programID>2</programID>
+        <programName>Укороченная программа</programName>
+        <author>Ivan</author>
+        <creationDay>2010-01-01</creationDay>
+        <courseList>
+            <courseID>1</courseID>
+            <courseID>2</courseID>
+            <courseID>3</courseID>
+        </courseList>
+    </Profile>
+
+    <Profile>
+        <programID>3</programID>
+        <programName>Специальная программа 1</programName>
+        <author>Ivan</author>
+        <creationDay>2010-01-01</creationDay>
+        <courseList>
+            <courseID>3</courseID>
+        </courseList>
+    </Profile>
+
+    <Course>
+        <courseID>1</courseID>
+        <courseName>Курс "Overview of Eclipse IDE"</courseName>
+        <courseAuthor>Ivan</courseAuthor>
+        <tasksList>
+            <taskID>1</taskID>
+        </tasksList>
+    </Course>
+
+    <Course>
+        <courseID>2</courseID>
+        <courseName>Курс "Основы языка Java"</courseName>
+        <courseAuthor>Vanya</courseAuthor>
+        <tasksList>
+            <taskID>1</taskID>
+            <taskID>2</taskID>
+        </tasksList>
+    </Course>
+
+    <Course>
+        <courseID>3</courseID>
+        <courseName>Курс "Язык Java - расширенные возможности""</courseName>
+        <courseAuthor>Ivan</courseAuthor>
+        <tasksList>
+            <taskID>1</taskID>
+            <taskID>2</taskID>
+        </tasksList>
+    </Course>
+
+    <Task>
+        <taskID>1</taskID>
+        <name>Overview of Eclipse IDE</name>
+        <tasks>
+            <theoryTask>
+                <complited>завершено</complited>
+            </theoryTask>
+        </tasks>
+        <timeMaking>4</timeMaking>
+        <mark>5</mark>
+    </Task>
+    
+    <Task>
+        <taskID>2</taskID>
+        <name>Курс "Основы языка Java"</name>
+        <tasks>
+            <theoryTask>
+                <complited>завершено</complited>
+            </theoryTask>
+            <practicalTask>
+                <inProcess> в процессе</inProcess>
+            </practicalTask>
+        </tasks>
+        <timeMaking>4</timeMaking>
+    </Task>
+
+    <Task>
+        <taskID>3</taskID>
+        <name>Learning the Java Language advanced features </name>
+        <tasks>
+            <theoryTask>
+                <complited>завершено</complited>
+            </theoryTask>
+            <practicalTask>
+                <inProcess> в процессе</inProcess>
+            </practicalTask>
+        </tasks>
+        <timeMaking>17</timeMaking>
+    </Task>
+</Report>
