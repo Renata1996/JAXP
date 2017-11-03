@@ -116,7 +116,7 @@
     
     <Task>
         <taskID>2</taskID>
-        <name>Курс "Основы языка Java"</name>
+        <name>"Основы языка Java"</name>
         <tasks>
             <theoryTask>
                 <complited>завершено</complited>

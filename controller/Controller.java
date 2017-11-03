@@ -1,52 +1,50 @@
 package controller;
 
-import org.xml.sax.SAXException;
 import view.CurriculumViewer;
 
 import javax.swing.*;
 import javax.swing.filechooser.FileNameExtensionFilter;
-import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.TreeModel;
-import javax.xml.parsers.ParserConfigurationException;
-import java.io.IOException;
 
 public class Controller {
+
+    private static final String XML_FILTER = "xml";
+    private static final String OPEN_FILE = "Открыть файл";
+    private static final int EXIT = 1;
+    private static final int IMPORT_FILE = 2;
 
     private String filePath = "C:\\Users\\Renata_Karimova\\Desktop\\jaxp\\src\\resources\\StudenReport.xml";
     private final CurriculumViewer form;
     private final TreeModel jTreeModel;
+    private JTree jTree;
     private PackagesController packagesController;
+    private  JTextArea jTextArea;
 
     public Controller(CurriculumViewer form, TreeModel jTreeModel) {
         this.form = form;
         this.jTreeModel = jTreeModel;
-        initPackagesController();
+        this.jTextArea = form.getTextInfo();
+        this.jTree = form.getPackages();
         initJTreeModel();
-        initComboBOxListener();
+        initComboBoxListener();
+        initPackagesController();
 
     }
+
 
     private void initPackagesController() {
-        packagesController = new PackagesController(form, (DefaultTreeModel) jTreeModel);
-        try {
-            packagesController.loadDefaultXML(filePath);
-        } catch (ParserConfigurationException e) {
-            e.printStackTrace();
-        } catch (SAXException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        packagesController = new PackagesController(jTree ,(DefaultTreeModel) jTreeModel, jTextArea);
+        packagesController.loadDefaultXML(filePath);
     }
 
-    private void initComboBOxListener() {
+    private void initComboBoxListener() {
         form.getComboBox().addItemListener(e -> {
             switch (form.getComboBox().getSelectedIndex()) {
-                case 1:
+                case EXIT:
                     form.dispose();
                     break;
-                case 2:
+                case IMPORT_FILE:
                     makeImport();
                     makeTree();
                     break;
@@ -62,8 +60,8 @@ public class Controller {
 
     private void makeImport() {
         JFileChooser chooser = new JFileChooser();
-        chooser.setFileFilter(new FileNameExtensionFilter("xml", "xml"));
-        int ret = chooser.showDialog(null, "Открыть файл");
+        chooser.setFileFilter(new FileNameExtensionFilter(XML_FILTER, XML_FILTER));
+        int ret = chooser.showDialog(null, OPEN_FILE);
         if (ret == JFileChooser.APPROVE_OPTION) {
             filePath = chooser.getSelectedFile().getPath();
         }
@@ -72,6 +70,8 @@ public class Controller {
     private void initJTreeModel() {
         form.getPackages().setModel(jTreeModel);
     }
+
+
 
 
 }

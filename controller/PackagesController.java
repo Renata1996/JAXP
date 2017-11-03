@@ -1,346 +1,177 @@
 package controller;
 
-import model.Course;
-import model.Profile;
-import model.Student;
-import model.Task;
-import org.w3c.dom.Document;
-import org.w3c.dom.Node;
-import org.w3c.dom.NodeList;
+import model.*;
 import org.xml.sax.SAXException;
-import validation.ValidationXML;
-import validation.ValidationXMLImpl;
-import view.CurriculumViewer;
 
 import javax.swing.*;
+import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeModel;
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
-import java.io.File;
+import java.awt.*;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
 public class PackagesController {
     private static final String ROOT_NODE = "Students";
-    private static final String STUDENT = "Student";
-    private final CurriculumViewer form;
+    private static final int INDEX_IN_TREE = 0;
+    private static final String FULL_NAME = "Full Name : ";
+    private static final String NEW_LINE = "\n";
+    private static final String REGION = "Region : ";
+    private static final String EMAIL = "Email : ";
+    private static final String START_DAY = "Start day : ";
+    private static final String CONTRACT = "Contract : ";
+    private static final String TITLE = "Title : ";
+    private static final String AUTHOR = "Author : ";
+    private static final String LAST_MODIFICATION = "Last modification : ";
+    private static final String DURATION = "Duration : ";
+    private static final String COURSES = "Courses : ";
+    private static final String TASKS = "Tasks : ";
+    private static final String MARK = "Mark : ";
+    private static final String TIME = "Time : ";
+    private static final String PRACTICAL_TASK = "Practical task : ";
+    private static final String THEORY_TASK = "Theory task : ";
+
     private final DefaultTreeModel jTreeModel;
     private final JTree jTree;
-    private ValidationXML validationXML;
-    private Document doc;
-    private String filePath;
+    private final JTextArea jTextArea;
 
     private List<Student> studentList;
-    private List<Profile> programtList = new ArrayList<>();
-    private List<Node> courseList = new ArrayList<>();
-    private List<Node> taskList = new ArrayList<>();
 
-
-    public PackagesController(CurriculumViewer form, DefaultTreeModel treeModel) {
-        this.form = form;
-        this.jTree = form.getPackages();
-        jTreeModel = treeModel;
+    public PackagesController(JTree jTree, DefaultTreeModel treeModel, JTextArea jTextArea) {
+        this.jTree = jTree;
+        this.jTextArea = jTextArea;
+        this.jTreeModel = treeModel;
         studentList = new ArrayList<>();
     }
 
-    public void loadDefaultXML(String filePath) throws ParserConfigurationException, SAXException, IOException {
-        this.filePath = filePath;
-        makeValidation();
-        initDoc();
-        initLists();
-
-        makeTree();
-
+    public void loadDefaultXML(String filePath) {
+        Students students = null;
+        try {
+            students = new Students(filePath);
+            students.makeStudentList();
+            studentList = students.getStudentList();
+            makeTree();
+            makeTreeListener();
+        } catch (IOException | SAXException | ParserConfigurationException e) {
+            makeException(e);
+        }
     }
 
-
-    private void initLists() {
-
-        NodeList nodeList = doc.getElementsByTagName("Student");
-        for (int i = 0; i < nodeList.getLength(); i++) {
-            Student student = new Student();
-            for (int j = 0; j < nodeList.item(i).getChildNodes().getLength(); j++) {
-                String text = nodeList.item(i).getChildNodes().item(j).getNodeName();
-                String value = nodeList.item(i).getChildNodes().item(j).getTextContent();
-                switch (text) {
-                    case "fullName":
-                        student.setFullName(value);
-                        break;
-                    case "city":
-                        student.setCity(value);
-                        break;
-                    case "email":
-                        student.setEmail(value);
-                        break;
-                    case "isContract":
-                        student.setContract(Boolean.parseBoolean(value));
-                        break;
-                    case "startDay":
-                        student.setStartDate(value);
-                        break;
-                    case "programProfile":
-                        student.setProfile(makeProfile(value));
-                        break;
-                    default:
-                        break;
-                }
-            }
-            studentList.add(student);
-        }
-
-        System.out.println("");
-       /* NodeList nodeList = doc.getElementsByTagName("Student");
-        for (int i = 0; i < nodeList.getLength(); i++) {
-            studentList.add(nodeList.item(i));
-        }
-        nodeList = doc.getElementsByTagName("Profile");
-        for (int i = 0; i < nodeList.getLength(); i++) {
-            programtList.add(nodeList.item(i));
-        }
-        nodeList = doc.getElementsByTagName("Course");
-        for (int i = 0; i < nodeList.getLength(); i++) {
-            courseList.add(nodeList.item(i));
-        }
-        nodeList = doc.getElementsByTagName("Task");
-        for (int i = 0; i < nodeList.getLength(); i++) {
-            taskList.add(nodeList.item(i));
-        }
-*/
-    }
-
-
-
-    private Profile makeProfile(String id) {
-        Profile profile = new Profile();
-        NodeList nodeList = doc.getElementsByTagName("Profile");
-        for (int i = 0; i < nodeList.getLength(); i++) {
-            for (int j = 0; j < nodeList.item(i).getChildNodes().getLength(); j++) {
-                String text = nodeList.item(i).getChildNodes().item(j).getNodeName();
-                String value = nodeList.item(i).getChildNodes().item(j).getTextContent();
-                if (text.equals("programID") && value.equals(id)) {
-                    profile = new Profile(Long.parseLong(value),
-                            nodeList.item(i).getChildNodes().item(j + 2).getTextContent(),
-                            nodeList.item(i).getChildNodes().item(j + 4).getTextContent(),
-                            nodeList.item(i).getChildNodes().item(j + 6).getTextContent());
-                    List<Course> courses = new ArrayList<>();
-                    NodeList courseIDList = nodeList.item(i).getChildNodes().item(j + 8).getChildNodes();
-                    for (int k = 0; k < courseIDList.getLength(); k++) {
-                        String cousrseID = courseIDList.item(k).getNodeName();
-                        String courseIDValue = courseIDList.item(k).getTextContent();
-                        if (cousrseID.equals("courseID")) {
-                            courses.add(makeCourse(courseIDValue));
-                        }
-
-                    }
-                    profile.setCourseList(courses);
-                }
-            }
-        }
-        return profile;
-    }
-
-    private Course makeCourse(String courseIDValue) {
-        Course course = new Course();
-        NodeList nodeList = doc.getElementsByTagName("Course");
-        for (int i = 0; i < nodeList.getLength(); i++) {
-            for (int j = 0; j < nodeList.item(i).getChildNodes().getLength(); j++) {
-                String text = nodeList.item(i).getChildNodes().item(j).getNodeName();
-                String value = nodeList.item(i).getChildNodes().item(j).getTextContent();
-                if (text.equals("courseID") && value.equals(courseIDValue)) {
-                    course = new Course(Long.parseLong(value),
-                            nodeList.item(i).getChildNodes().item(j + 2).getTextContent(),
-                            nodeList.item(i).getChildNodes().item(j + 4).getTextContent());
-                    List<Task> tasks = new ArrayList<>();
-                    NodeList courseIDList = nodeList.item(i).getChildNodes().item(j + 6).getChildNodes();
-                    for (int k = 0; k < courseIDList.getLength(); k++) {
-                        String taskID = courseIDList.item(k).getNodeName();
-                        String taskIDValue = courseIDList.item(k).getTextContent();
-                        if (taskID.equals("taskID")) {
-                            tasks.add(makeTask(taskIDValue));
-                        }
-
-                    }
-                    course.setTaskList(tasks);
-                }
-            }
-        }
-        return course;
-    }
-
-    private Task makeTask(String taskIDValue) {
-        return null;
-    }
-
-    private void makeValidation() throws IOException, SAXException {
-        validationXML = new ValidationXMLImpl(filePath);
-        validationXML.validate();
-    }
-
-    private void initDoc() throws ParserConfigurationException, IOException, SAXException {
-        DocumentBuilderFactory f = DocumentBuilderFactory.newInstance();
-        f.setValidating(false);
-        DocumentBuilder builder = builder = f.newDocumentBuilder();
-        doc = builder.parse(new File(filePath));
-    }
 
     private void makeTree() throws ParserConfigurationException, IOException, SAXException {
-
-       /* DefaultMutableTreeNode rootNode = new DefaultMutableTreeNode();
+        DefaultMutableTreeNode rootNode = new DefaultMutableTreeNode();
         rootNode.setUserObject(ROOT_NODE);
         jTreeModel.setRoot(rootNode);
+        if (studentList != null) {
+            for (Student student : studentList) {
+                DefaultMutableTreeNode fullNameTreeNode = new DefaultMutableTreeNode();
+                fullNameTreeNode.setUserObject(student.getFullName());
+                jTreeModel.insertNodeInto(fullNameTreeNode, rootNode, INDEX_IN_TREE);
 
-        Map<DefaultMutableTreeNode, String> map = new HashMap<>();
+                Profile profile = student.getProfile();
+                DefaultMutableTreeNode profileTreeNode = new DefaultMutableTreeNode();
+                profileTreeNode.setUserObject(profile.getProgramName());
+                jTreeModel.insertNodeInto(profileTreeNode, fullNameTreeNode, INDEX_IN_TREE);
 
-        for (Node node:studentList) {
-            NodeList subNodeList = node.getChildNodes();
-            DefaultMutableTreeNode childTreeNode = null;
-            for (int j = 0; j < subNodeList.getLength(); j++) {
-                Node subNode = subNodeList.item(j);
-                if (subNode.getNodeName().equals("fullName")) {
-                    childTreeNode = new DefaultMutableTreeNode();
-                    childTreeNode.setUserObject(getText(subNode));
-                    jTreeModel.insertNodeInto(childTreeNode, rootNode, 0);
-                }
-                if (subNode.getNodeName().equals("programProfile")) {
-                    map.put(childTreeNode, getText(subNode));
-                }
-            }
-        }
+                for (Course course : profile.getCourseList()) {
+                    DefaultMutableTreeNode courseTreeNode = new DefaultMutableTreeNode();
+                    courseTreeNode.setUserObject(course.getCourseName());
+                    jTreeModel.insertNodeInto(courseTreeNode, profileTreeNode, INDEX_IN_TREE);
 
-        for (Node node:programtList) {
-            NodeList subNodeList = node.getChildNodes();
-            DefaultMutableTreeNode childTreeNode = null;
-            for (DefaultMutableTreeNode parent : map.keySet()) {
-                for (int j = 0; j < subNodeList.getLength(); j++) {
-                    Node subNode = subNodeList.item(j);
-                    if (subNode.getNodeName().equals("programID")) {
-                        childTreeNode = new DefaultMutableTreeNode();
-                        childTreeNode.setUserObject(getText(subNode));
-                        if (map.get(parent).equals(getText(subNode))) {
-                            jTreeModel.insertNodeInto(childTreeNode, parent, 0);
-
-                        }
+                    for (Task task : course.getTaskList()) {
+                        DefaultMutableTreeNode taskTreeNode = new DefaultMutableTreeNode();
+                        taskTreeNode.setUserObject(task.getTaskName());
+                        jTreeModel.insertNodeInto(taskTreeNode, courseTreeNode, INDEX_IN_TREE);
                     }
                 }
             }
         }
+    }
 
-
+    private void makeTreeListener() {
         jTree.addTreeSelectionListener(e -> {
             Object obj = jTree.getLastSelectedPathComponent();
             if (obj != null) {
                 DefaultMutableTreeNode sel = (DefaultMutableTreeNode) obj;
-                System.out.println(sel.getLevel() + "/" + sel.toString());
                 try {
                     showNodeInfo(sel.toString(), sel.getLevel());
-                } catch (ParserConfigurationException e1) {
-                    e1.printStackTrace();
-                } catch (IOException e1) {
-                    e1.printStackTrace();
-                } catch (SAXException e1) {
-                    e1.printStackTrace();
+                } catch (ParserConfigurationException | IOException | SAXException ex) {
+                    makeException(ex);
                 }
             }
 
-        });*/
-
-
+        });
     }
+
+    private void makeException(Exception ex) {
+        jTextArea.setBackground(Color.pink);
+        jTextArea.setText(ex.getMessage());
+    }
+
 
     private void showNodeInfo(String nodeName, int level) throws ParserConfigurationException, IOException, SAXException {
 
-        NodeList nodeList = doc.getElementsByTagName("Student");
-        for (int i = 0; i < nodeList.getLength(); i++) {
-            Node node = nodeList.item(i);
-            NodeList subNodeList = node.getChildNodes();
-            boolean flag = false;
-            for (int j = 0; j < subNodeList.getLength(); j++) {
-                Node subNode = subNodeList.item(j);
-                if (subNode.getTextContent().equals(nodeName)) {
-                    flag = true;
-                }
+        for (Student student : studentList) {
+            if (nodeName.equals(student.getFullName())) {
+                jTextArea.setText(FULL_NAME + student.getFullName() + NEW_LINE + REGION + student.getCity() +
+                        NEW_LINE + EMAIL + student.getEmail() + NEW_LINE + CONTRACT +
+                        student.isContract() + NEW_LINE + START_DAY + student.getStartDate());
+                return;
             }
-            if (flag) {
-                form.getTextInfo().setText("");
-                for (int j = 0; j < subNodeList.getLength(); j++) {
-                    Node subNode = subNodeList.item(j);
-                    if (subNode.getNodeName() != "#text" && subNode.getNodeName() != "programProfile") {
+            if (nodeName.equals(student.getProfile().getProgramName())) {
+                int duration = 0;
+                Profile profile = student.getProfile();
+                StringBuilder coursesName = new StringBuilder();
+                for (Course course : profile.getCourseList()) {
+                    for (Task task : course.getTaskList()) {
+                        duration += task.getTimeMaking();
+                    }
+                    coursesName.append(NEW_LINE).append(course.getCourseName());
+                }
+                jTextArea.setText(TITLE + profile.getProgramName() + NEW_LINE + AUTHOR + profile.getAuthor() + NEW_LINE +
+                        LAST_MODIFICATION + profile.getCreationDate() + NEW_LINE + DURATION + duration + NEW_LINE + NEW_LINE + COURSES + NEW_LINE + coursesName);
+                return;
+            }
 
-                        form.getTextInfo().setText(form.getTextInfo().getText() + "\n" + subNode.getNodeName() + " : " + subNode.getTextContent());
+            Profile profile = student.getProfile();
+            for (Course course : profile.getCourseList()) {
+                if (nodeName.equals(course.getCourseName())) {
+                    int duration = 0;
+                    StringBuilder tasksName = new StringBuilder();
+                    for (Task task : course.getTaskList()) {
+                        duration += task.getTimeMaking();
+                        tasksName.append(NEW_LINE).append(task.getTaskName());
+                    }
+                    jTextArea.setText(TITLE + course.getCourseName() + NEW_LINE + AUTHOR + course.getCourseAuthor() +
+                            NEW_LINE + DURATION + duration + NEW_LINE + NEW_LINE + TASKS + NEW_LINE + tasksName);
+
+                }
+
+            }
+            for (Course course : profile.getCourseList()) {
+                for (Task task : course.getTaskList()) {
+                    if (nodeName.equals(task.getTaskName())) {
+                        String text = "";
+                        text = TITLE + task.getTaskName() + NEW_LINE + TIME + task.getTimeMaking();
+
+                        if (task.getTheoryTask() != null && task.getTheoryTask().getKey()) {
+                            text += NEW_LINE + THEORY_TASK + task.getTheoryTask().getValue();
+                        }
+                        if (task.getPracticalTask() != null && task.getPracticalTask().getKey()) {
+                            text += NEW_LINE + PRACTICAL_TASK + task.getPracticalTask().getValue();
+                        }
+                        if (task.getMark() > 0) {
+                            text += NEW_LINE +MARK + task.getMark();
+                        }
+
+                        jTextArea.setText(text);
+                        return;
                     }
                 }
-                break;
 
 
             }
         }
-        nodeList = doc.getElementsByTagName("Profile");
-        for (int i = 0; i < nodeList.getLength(); i++) {
-            Node node = nodeList.item(i);
-            NodeList subNodeList = node.getChildNodes();
-            boolean flag = false;
-            for (int j = 0; j < subNodeList.getLength(); j++) {
-                Node subNode = subNodeList.item(j);
-                if (subNode.getTextContent().equals(nodeName)) {
-                    flag = true;
-                }
-            }
-            if (flag) {
-                form.getTextInfo().setText("");
-                for (int j = 0; j < subNodeList.getLength(); j++) {
-                    Node subNode = subNodeList.item(j);
-                    if (subNode.getNodeName() != "#text" && subNode.getNodeName() != "programID" && subNode.getNodeName() != "courseList") {
-                        form.getTextInfo().setText(form.getTextInfo().getText() + "\n" + subNode.getNodeName() + " : " + subNode.getTextContent());
-                    }
-
-                }
-                break;
-
-
-            }
-        }
-    }
-
-
-    public Node findSubNode(String name, Node node) {
-
-        if (node.getNodeType() != Node.ELEMENT_NODE) {
-            return null;
-        }
-        if (!node.hasChildNodes()) {
-            return null;
-        }
-        NodeList list = node.getChildNodes();
-        for (int i = 0; i < list.getLength(); i++) {
-            Node subnode = list.item(i);
-            if (subnode.getNodeType() == Node.ELEMENT_NODE) {
-                if (subnode.getNodeName().equals(name)) {
-                    return subnode;
-                }
-            }
-        }
-        return null;
-    }
-
-    public String getText(Node node) {
-        StringBuilder result = new StringBuilder();
-        if (!node.hasChildNodes()) {
-            return "";
-        }
-        NodeList list = node.getChildNodes();
-        for (int i = 0; i < list.getLength(); i++) {
-            Node subnode = list.item(i);
-            int type = subnode.getNodeType();
-            if (type == Node.TEXT_NODE) {
-                result.append(subnode.getNodeValue());
-            } else if (type == Node.CDATA_SECTION_NODE) {
-                result.append(subnode.getNodeValue());
-            } else if (type == Node.ENTITY_REFERENCE_NODE) {             // Поиск текста по поддереву
-                result.append(getText(subnode));
-            }
-        }
-        return result.toString();
     }
 }

@@ -1,10 +1,6 @@
 package view;
 
 import javax.swing.*;
-import javax.swing.filechooser.FileNameExtensionFilter;
-import javax.swing.tree.DefaultMutableTreeNode;
-import javax.swing.tree.DefaultTreeModel;
-import javax.swing.tree.TreeModel;
 import java.awt.*;
 
 public class CurriculumViewer extends JFrame {
@@ -13,15 +9,16 @@ public class CurriculumViewer extends JFrame {
     private JPanel mainPane;
     private JTextArea textInfo;
     private JTree packages;
-    private JComboBox comboBox;
+    private JComboBox<String> comboBox;
     private static final String FILE = "FILE";
     private static final String EXIT = "EXIT";
     private static final String IMPORT_FROM_FILE = "IMPORT XML FROM FILE";
+    private static final String TITLE = "CurriculmViewer";
 
 
     public CurriculumViewer() {
         $$$setupUI$$$();
-        setTitle("CurriculmViewer");
+        setTitle(TITLE);
         setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
         getContentPane().add(getMainPane());
         setResizable(false);
@@ -36,8 +33,6 @@ public class CurriculumViewer extends JFrame {
         comboBox.addItem(EXIT);
         comboBox.addItem(IMPORT_FROM_FILE);
     }
-
-
 
 
     public JPanel getMainPane() {
@@ -64,11 +59,11 @@ public class CurriculumViewer extends JFrame {
         this.packages = packages;
     }
 
-    public JComboBox getComboBox() {
+    public JComboBox<String> getComboBox() {
         return comboBox;
     }
 
-    public void setComboBox(JComboBox comboBox) {
+    public void setComboBox(JComboBox<String> comboBox) {
         this.comboBox = comboBox;
     }
 
@@ -95,8 +90,10 @@ public class CurriculumViewer extends JFrame {
         mainPane.setVerifyInputWhenFocusTarget(true);
         textInfo = new JTextArea();
         mainPane.add(textInfo, new com.intellij.uiDesigner.core.GridConstraints(1, 1, 1, 1, com.intellij.uiDesigner.core.GridConstraints.ANCHOR_CENTER, com.intellij.uiDesigner.core.GridConstraints.FILL_BOTH, com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_WANT_GROW, com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_WANT_GROW, null, new Dimension(150, 50), null, 0, false));
+        final JScrollPane scrollPane1 = new JScrollPane();
+        mainPane.add(scrollPane1, new com.intellij.uiDesigner.core.GridConstraints(1, 0, 1, 1, com.intellij.uiDesigner.core.GridConstraints.ANCHOR_CENTER, com.intellij.uiDesigner.core.GridConstraints.FILL_BOTH, com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_CAN_SHRINK | com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_WANT_GROW, com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_CAN_SHRINK | com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_WANT_GROW, null, null, null, 0, false));
         packages = new JTree();
-        mainPane.add(packages, new com.intellij.uiDesigner.core.GridConstraints(1, 0, 1, 1, com.intellij.uiDesigner.core.GridConstraints.ANCHOR_CENTER, com.intellij.uiDesigner.core.GridConstraints.FILL_BOTH, com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_WANT_GROW, com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_WANT_GROW, null, new Dimension(150, 50), null, 0, false));
+        scrollPane1.setViewportView(packages);
         comboBox = new JComboBox();
         mainPane.add(comboBox, new com.intellij.uiDesigner.core.GridConstraints(0, 0, 1, 1, com.intellij.uiDesigner.core.GridConstraints.ANCHOR_WEST, com.intellij.uiDesigner.core.GridConstraints.FILL_HORIZONTAL, com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_CAN_GROW, com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
     }
