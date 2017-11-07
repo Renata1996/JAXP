@@ -6,12 +6,12 @@ import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.TreeModel;
 
-public class Main {
+public class FrameBuilder {
 
     private CurriculumViewer form;
     private TreeModel jTreeModel;
 
-    public Main() {
+    public FrameBuilder() {
         SwingUtilities.invokeLater(() -> {
             jTreeModel= new DefaultTreeModel(new DefaultMutableTreeNode());
             form = new CurriculumViewer();
@@ -28,7 +28,7 @@ public class Main {
 
     public static void main(String[] args) {
         //спец класс для запуска юай
-        new Main();
+        new FrameBuilder();
 
     }
 }

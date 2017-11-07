@@ -1,6 +1,5 @@
 package model;
 
-import java.util.Date;
 import java.util.List;
 
 public class Profile {
@@ -10,7 +9,8 @@ public class Profile {
     private String creationDate;
     private List<Course> courseList;
 
-    public Profile(){}
+    public Profile() {
+    }
 
     public Profile(long profileID, String programName, String author, String creationDate) {
         this.profileID = profileID;

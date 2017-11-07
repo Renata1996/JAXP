@@ -14,7 +14,7 @@ public class Controller {
     private static final int EXIT = 1;
     private static final int IMPORT_FILE = 2;
 
-    private String filePath = "C:\\Users\\Renata_Karimova\\Desktop\\jaxp\\src\\resources\\StudenReport.xml";
+    private String filePath = "src/resources/StudentReport.xml";
     private final CurriculumViewer form;
     private final TreeModel jTreeModel;
     private JTree jTree;

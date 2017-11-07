@@ -1,6 +1,10 @@
-package model;
+package controller;
 
 import javafx.util.Pair;
+import model.Course;
+import model.Profile;
+import model.Student;
+import model.Task;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
@@ -16,7 +20,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-public class Students {
+public class StudentXmlCreationUtils {
 
     private static final String STUDENT_NAME_TAG = "Student";
     private static final String PROFILE_NAME_TAG = "Profile";
@@ -41,7 +45,7 @@ public class Students {
     private static final String AUTHOR = "author";
     private static final String COURSE_LIST = "courseList";
     private static final String CREATION_DAY = "creationDay";
-    private static final String EMPTY_TAG="";
+    private static final String EMPTY_TAG = "";
     private static final String COURSE_TAG_NAME = "Course";
     private static final String THEORY_TASK = "theoryTask";
     private static final String PRACTICAL_TASK = "practicalTask";
@@ -51,7 +55,7 @@ public class Students {
     private String filePath;
     private ValidationXML validationXML;
 
-    public Students(String filePath) throws IOException, SAXException, ParserConfigurationException {
+    public StudentXmlCreationUtils(String filePath) throws IOException, SAXException, ParserConfigurationException {
         this.filePath = filePath;
         initDoc();
         makeValidation();

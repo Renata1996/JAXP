@@ -46,11 +46,11 @@ public class PackagesController {
     }
 
     public void loadDefaultXML(String filePath) {
-        Students students = null;
+        StudentXmlCreationUtils studentXmlCreationUtils = null;
         try {
-            students = new Students(filePath);
-            students.makeStudentList();
-            studentList = students.getStudentList();
+            studentXmlCreationUtils = new StudentXmlCreationUtils(filePath);
+            studentXmlCreationUtils.makeStudentList();
+            studentList = studentXmlCreationUtils.getStudentList();
             makeTree();
             makeTreeListener();
         } catch (IOException | SAXException | ParserConfigurationException e) {
@@ -114,9 +114,11 @@ public class PackagesController {
 
         for (Student student : studentList) {
             if (nodeName.equals(student.getFullName())) {
-                jTextArea.setText(FULL_NAME + student.getFullName() + NEW_LINE + REGION + student.getCity() +
-                        NEW_LINE + EMAIL + student.getEmail() + NEW_LINE + CONTRACT +
-                        student.isContract() + NEW_LINE + START_DAY + student.getStartDate());
+                StringBuilder builder = new StringBuilder();
+                builder.append(FULL_NAME).append(student.getFullName()).append(NEW_LINE).append(REGION).append(student.getCity())
+                        .append(NEW_LINE).append(EMAIL).append(student.getEmail()).append(NEW_LINE).append(CONTRACT)
+                        .append(student.isContract()).append(NEW_LINE).append(START_DAY).append(student.getStartDate());
+                jTextArea.setText(builder.toString());
                 return;
             }
             if (nodeName.equals(student.getProfile().getProgramName())) {
@@ -129,8 +131,13 @@ public class PackagesController {
                     }
                     coursesName.append(NEW_LINE).append(course.getCourseName());
                 }
-                jTextArea.setText(TITLE + profile.getProgramName() + NEW_LINE + AUTHOR + profile.getAuthor() + NEW_LINE +
-                        LAST_MODIFICATION + profile.getCreationDate() + NEW_LINE + DURATION + duration + NEW_LINE + NEW_LINE + COURSES + NEW_LINE + coursesName);
+                StringBuilder builder = new StringBuilder();
+                builder.append(TITLE).append(profile.getProgramName()).append(NEW_LINE)
+                        .append(AUTHOR).append(profile.getAuthor()).append(NEW_LINE)
+                        .append(LAST_MODIFICATION).append(profile.getCreationDate()).append(NEW_LINE).append(DURATION).append(duration)
+                        .append(NEW_LINE).append(NEW_LINE).append(COURSES).append(NEW_LINE).append(coursesName);
+
+                jTextArea.setText(builder.toString());
                 return;
             }
 
@@ -143,8 +150,11 @@ public class PackagesController {
                         duration += task.getTimeMaking();
                         tasksName.append(NEW_LINE).append(task.getTaskName());
                     }
-                    jTextArea.setText(TITLE + course.getCourseName() + NEW_LINE + AUTHOR + course.getCourseAuthor() +
-                            NEW_LINE + DURATION + duration + NEW_LINE + NEW_LINE + TASKS + NEW_LINE + tasksName);
+                    StringBuilder builder = new StringBuilder();
+                    builder.append(TITLE).append(course.getCourseName()).append(NEW_LINE).append(AUTHOR)
+                            .append(course.getCourseAuthor()).append(NEW_LINE).append(DURATION).append(duration)
+                            .append(NEW_LINE).append(NEW_LINE).append(TASKS).append(NEW_LINE).append(tasksName);
+                    jTextArea.setText(builder.toString());
 
                 }
 
@@ -152,20 +162,19 @@ public class PackagesController {
             for (Course course : profile.getCourseList()) {
                 for (Task task : course.getTaskList()) {
                     if (nodeName.equals(task.getTaskName())) {
-                        String text = "";
-                        text = TITLE + task.getTaskName() + NEW_LINE + TIME + task.getTimeMaking();
-
+                        StringBuilder text = new StringBuilder();
+                        text.append(TITLE).append(task.getTaskName()).append(NEW_LINE).append(TIME).append(task.getTimeMaking());
                         if (task.getTheoryTask() != null && task.getTheoryTask().getKey()) {
-                            text += NEW_LINE + THEORY_TASK + task.getTheoryTask().getValue();
+                            text.append(NEW_LINE).append(THEORY_TASK).append(task.getTheoryTask().getValue());
                         }
                         if (task.getPracticalTask() != null && task.getPracticalTask().getKey()) {
-                            text += NEW_LINE + PRACTICAL_TASK + task.getPracticalTask().getValue();
+                            text.append(NEW_LINE).append(PRACTICAL_TASK).append(task.getPracticalTask().getValue());
                         }
                         if (task.getMark() > 0) {
-                            text += NEW_LINE +MARK + task.getMark();
+                            text.append(NEW_LINE).append(MARK).append(task.getMark());
                         }
 
-                        jTextArea.setText(text);
+                        jTextArea.setText(text.toString());
                         return;
                     }
                 }
